@@ -11,16 +11,9 @@ broker:
 
 nameserver:
   replicaCount: 1
-  resources:
-    limits:
-      cpu: 4
-      memory: 12Gi
-    requests:
-      cpu: 500m
-      memory: 2Gi
   
   persistence:
-    enabled: true
+    enabled: false
     size: 8Gi
 
 dashboard:
