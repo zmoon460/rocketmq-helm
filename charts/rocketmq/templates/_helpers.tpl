@@ -62,7 +62,14 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-nameservere
+broker-cm
+*/}}
+{{- define "rocketmq.broker.configmap.fullname" -}}
+{{ include "rocketmq.fullname" . }}-broker-cm
+{{- end }}
+
+{{/*
+nameserver
 */}}
 {{- define "rocketmq.nameserver.fullname" -}}
 {{ include "rocketmq.fullname" . }}-nameserver

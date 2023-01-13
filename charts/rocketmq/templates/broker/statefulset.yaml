@@ -1,19 +1,18 @@
 {{- $fullName := include "rocketmq.fullname" . -}}
 {{- $nameserverFullName := include "rocketmq.nameserver.fullname" . -}}
+{{- $brokerCmName := include "rocketmq.broker.configmap.fullname" . -}}
 {{- $masterSize := int .Values.broker.size.master }}
 {{- $replicaCount := int (add1 .Values.broker.size.replica) }}
 {{- $nameserverReplicaCount:= int .Values.nameserver.replicaCount }}
-{{- $image := printf "%s:%s" .Values.broker.image.repository .Values.broker.image.tag }}
-{{- range $brokerIndex := until $masterSize }}
-{{- range $brokerID := until $replicaCount }}
-  {{- $brokerName := printf "broker-%d" $brokerIndex }}
-  {{- $brokerFullName := printf "%s-master" $brokerName }}
+{{- $image := printf "%s:%s" .Values.image.repository .Values.image.tag }}
+{{- range $brokerId := until $replicaCount }}
+  {{- $brokerFullName := printf "%s-broker-master" $fullName }}
   {{- $brokerMemory := $.Values.broker.master.jvmMemory }}
   {{- $brokerRole := $.Values.broker.master.brokerRole }}
   {{- $brokerConfigKey := "broker-master.conf" }}
-  {{- if gt $brokerID 0 }}
-    {{- /* master $brokerID = 0, slave $brokerID > 0 */}}
-    {{- $brokerFullName = printf "%s-replica-%d" $brokerName $brokerID }}
+  {{- if gt $brokerId 0 }}
+    {{- /* master $brokerId = 0, slave $brokerId > 0 */}}
+    {{- $brokerFullName = printf "%s-broker-replica-id%d" $fullName $brokerId }}
     {{- $brokerMemory = $.Values.broker.replica.jvmMemory }}
     {{- $brokerRole = "SLAVE" }}
     {{- $brokerConfigKey = "broker-slave.conf" }}
@@ -22,12 +21,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ printf "%s-%s" $fullName $brokerFullName }}
+  name: {{ $brokerFullName }}
   labels:
     {{- include "rocketmq.labels" $ | nindent 4 }}
 spec:
   podManagementPolicy: OrderedReady
-  replicas: 1
+  replicas: {{ $masterSize }}
   updateStrategy:
     type: RollingUpdate
   selector:
@@ -66,40 +65,40 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      securityContext:
+        fsGroup: 3000
+        runAsUser: 3000
       containers:
       - name: broker
         image: {{ $image | quote }}
-        {{- if $.Values.nameserver.image.pullPolicy }}
-        imagePullPolicy: {{ $.Values.nameserver.image.pullPolicy | quote }}
+        command:
+          - sh
+          - /runbroker.sh
+        {{- if $.Values.image.pullPolicy }}
+        imagePullPolicy: {{ $.Values.image.pullPolicy | quote }}
         {{- end }}
         env:
         - name: NAMESRV_ADDR
           #value: rocketmq-nameserver:9876
           value: {{ range $i := until $nameserverReplicaCount }}{{ if gt $i 0 }}{{ printf ";" }}{{ end }}{{ printf "%s-%d.%s:9876" $nameserverFullName $i $nameserverFullName }}{{ end }}
-        - name: BROKER_ID
-          value: {{ $brokerID | quote }}
-        - name: BROKER_CLUSTER_NAME
-          value: {{ $.Values.clusterName | quote }}
-        - name: BROKER_NAME
-          value: {{ $brokerName | quote }}
-        - name: BROKER_ROLE
+        {{- /*
+        #- name: BROKER_CLUSTER_NAME
+        #  value: {{ $.Values.clusterName | quote }}
+        #- name: BROKER_NAME
+        #  value: {{ $brokerName | quote }}
+        */}}
+        - name: ROCKETMQ_CONF_brokerId
+          value: {{ $brokerId | quote }}
+        - name: ROCKETMQ_CONF_brokerRole
           value: {{ $brokerRole | quote }}
-        - name: BROKER_MEM
-          value: {{ $brokerMemory | quote }}
+        - name: JAVA_OPT_BROKER
+          value: "{{ $brokerMemory }} -XX:+UseG1GC"
         {{- with $.Values.broker.commonEnvs }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
         {{- with $.Values.broker.extraEnvs }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
-        lifecycle:
-          postStart:
-            exec:
-              command:
-              - /bin/bash
-              - -c
-              - echo Initial broker
-              #- "export BROKER_NAME=broker-${HOSTNAME: -1} ; echo Broker Name: $BROKER_NAME"
         ports:
         - containerPort: 10909
           name: vip
@@ -111,7 +110,7 @@ spec:
           name: ha
           protocol: TCP
         resources:
-        {{- if eq $brokerID 0 }}
+        {{- if eq $brokerId 0 }}
           {{- toYaml $.Values.broker.master.resources | nindent 10 }}
         {{- else }}
           {{- toYaml $.Values.broker.replica.resources | nindent 10 }}
@@ -119,25 +118,33 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        - mountPath: /root/logs
+        - mountPath: /home/rocketmq/logs
           name: broker-storage
-          subPath: logs/rocketmq-broker
-        - mountPath: /root/store
+          subPath: rocketmq-broker/logs
+        - mountPath: /home/rocketmq/store
           name: broker-storage
-          subPath: store/rocketmq-broker
-        - mountPath: /root/rocketmq/broker/conf/broker-common.conf
-          name: broker-config
-          subPath: broker-common.conf
+          subPath: rocketmq-broker/store
+        - mountPath: /etc/rocketmq/broker-base.conf
+          name: broker-base-config
+          subPath: broker-base.conf
+        - mountPath: /runbroker.sh
+          name: runbroker-sh
+          subPath: runbroker.sh
       dnsPolicy: ClusterFirst
       terminationGracePeriodSeconds: 30
       volumes:
       - configMap:
-          defaultMode: 420
           items:
-          - key: broker-common.conf
-            path: broker-common.conf
-          name: broker-config
-        name: broker-config
+          - key: broker-base.conf
+            path: broker-base.conf
+          name: {{ $brokerCmName }}
+        name: broker-base-config
+      - configMap:
+          items:
+          - key: runbroker.sh
+            path: runbroker.sh
+          name: {{ $brokerCmName }}
+        name: runbroker-sh
   {{- if not $.Values.broker.persistence.enabled }}
       - name: broker-storage
         emptyDir: {}
@@ -155,5 +162,4 @@ spec:
           requests:
             storage: {{ $.Values.broker.persistence.size | quote }}
   {{- end }}
-{{- end }}
 {{- end }}

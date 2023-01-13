@@ -1,31 +1,36 @@
 clusterName: "rocketmq-cluster-a"
 
+image:
+  repository: "apache/rocketmq"
+  pullPolicy: IfNotPresent
+  tag: "4.9.4"
+
 broker:
   size:
     master: 1
     replica: 0
-  image:
-    repository: "apacherocketmq/rocketmq-broker"
-    pullPolicy: IfNotPresent
-    tag: "4.5.0-alpine-operator-0.3.0"
+  #image:
+  #  repository: "apache/rocketmq"
+  #  pullPolicy: IfNotPresent
+  #  tag: "4.9.4"
   
   master:
     brokerRole: ASYNC_MASTER
-    jvmMemory: " -Xms1g -Xmx1g -Xmn256m "
+    jvmMemory: "-Xms1g -Xmx1g"
     resources:
       limits:
         cpu: 4
-        memory: 8Gi
+        memory: 16Gi
       requests:
         cpu: 200m
         memory: 2Gi
   
   replica:
-    jvmMemory: " -Xms1g -Xmx1g -Xmn256m "
+    jvmMemory: "-Xms1g -Xmx1g"
     resources:
       limits:
         cpu: 4
-        memory: 8Gi
+        memory: 16Gi
       requests:
         cpu: 50m
         memory: 2Gi
@@ -36,13 +41,13 @@ broker:
     #storageClass: "gp2"
   
   config:
-    brokerRole: ASYNC_MASTER
+    ## brokerClusterName brokerName brokerRole brokerId 由内置脚本自动生成
     deleteWhen: "04"
     fileReservedTime: "48"
     flushDiskType: "ASYNC_FLUSH"
     waitTimeMillsInSendQueue: "1000"
-    # transientStorePoolEnable: "true"
-    # transferMsgByHeap: "false"
+    #transientStorePoolEnable: "true"
+    #transferMsgByHeap: "false"
 
   affinityOverride: {}
   tolerations: {}
@@ -50,10 +55,10 @@ broker:
 
 nameserver:
   replicaCount: 1
-  image:
-    repository: "apacherocketmq/rocketmq-nameserver"
-    pullPolicy: IfNotPresent
-    tag: "4.5.0-alpine-operator-0.3.0"
+  #image:
+  #  repository: "apache/rocketmq"
+  #  pullPolicy: IfNotPresent
+  #  tag: "4.9.4"
 
   resources:
     limits:
@@ -66,7 +71,7 @@ nameserver:
       ephemeral-storage: 1Gi
   
   persistence:
-    enabled: true
+    enabled: false
     size: 8Gi
     #storageClass: "gp2"
 

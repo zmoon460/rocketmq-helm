@@ -1,5 +1,9 @@
 clusterName: "cluster-test"
 
+image:
+  repository: "apache/rocketmq"
+  tag: "4.9.4"
+
 broker:
   size:
     master: 1
@@ -11,24 +15,20 @@ broker:
 
 nameserver:
   replicaCount: 1
-  
-  persistence:
-    enabled: false
-    size: 8Gi
 
 dashboard:
   enabled: true
   replicaCount: 1
 
   ingress:
-    enabled: true
+    enabled: false
     className: "nginx"
     hosts:
       - host: rocketmq.example.com
         paths:
           - path: /
             pathType: ImplementationSpecific
-    tls:
-      - secretName: example-com-tls
-        hosts:
-          - rocketmq.example.com
+    #tls:
+    #  - secretName: example-com-tls
+    #    hosts:
+    #      - rocketmq.example.com

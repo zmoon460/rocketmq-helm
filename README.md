@@ -1,4 +1,15 @@
-# RocketMQ Helm
+# RocketMQ Helm Chart
+
+## v2 版本发布公告
+
+- 兼容官方容器镜像 [apache/rocketmq](https://hub.docker.com/r/apache/rocketmq)
+- 支持 rocketmq `4.5` 到 `4.9` 版本
+
+``` yaml
+image:
+  repository: "apache/rocketmq"
+  tag: "4.9.4"
+```
 
 ## 部署
 
@@ -8,9 +19,9 @@
 
 kubectl create namespace rocketmq
 # 部署测试集群, 单 Master
-helm -n rocketmq install rocketmq -f examples/test.yml ./
+helm -n rocketmq install rocketmq -f examples/test.yml ./charts/rocketmq
 # 部署生产集群, 多 Master 多 Slave
-helm -n rocketmq install rocketmq -f examples/production.yaml ./
+helm -n rocketmq install rocketmq -f examples/production.yaml ./charts/rocketmq
 ```
 
 ## Broker 集群架构

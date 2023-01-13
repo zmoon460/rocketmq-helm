@@ -1,5 +1,5 @@
 {{- $fullName := include "rocketmq.nameserver.fullname" . -}}
-{{- $image := printf "%s:%s" .Values.nameserver.image.repository .Values.nameserver.image.tag }}
+{{- $image := printf "%s:%s" .Values.image.repository .Values.image.tag }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -46,9 +46,12 @@ spec:
       containers:
       - name: nameserver
         image: {{ $image | quote }}
-        {{- if .Values.nameserver.image.pullPolicy }}
-        imagePullPolicy: {{ .Values.nameserver.image.pullPolicy | quote }}
+        {{- if .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         {{- end }}
+        command:
+          - sh
+          - mqnamesrv
         ports:
         - containerPort: 9876
           name: main
@@ -58,7 +61,7 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        - mountPath: /root/logs
+        - mountPath: /home/rocketmq/logs
           name: nameserver-storage
           subPath: logs
       dnsPolicy: ClusterFirst
