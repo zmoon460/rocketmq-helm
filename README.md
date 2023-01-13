@@ -14,8 +14,8 @@ image:
 ## 部署
 
 ``` shell
-# git clone
-# cd rocketmq-helm
+git clone https://github.com/itboon/rocketmq-helm.git
+cd rocketmq-helm
 
 kubectl create namespace rocketmq
 # 部署测试集群, 单 Master
