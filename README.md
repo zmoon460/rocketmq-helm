@@ -76,11 +76,6 @@ broker:
     master: 3
     replica: 1
 
-  # 修改 broker 容器镜像地址和版本
-  #image:
-  #  repository: "apacherocketmq/rocketmq-broker"
-  #  tag: "4.5.0-alpine-operator-0.3.0"
-
   persistence:
     enabled: true
     size: 8Gi
@@ -112,11 +107,6 @@ broker:
 nameserver:
   replicaCount: 3
 
-  # 修改 nameserver 容器镜像地址和版本
-  #image:
-  #  repository: "apacherocketmq/rocketmq-nameserver"
-  #  tag: "4.5.0-alpine-operator-0.3.0"
-
   resources:
     limits:
       cpu: 4
@@ -135,15 +125,17 @@ dashboard:
   replicaCount: 1
 
   ingress:
-    enabled: true
-    className: "nginx"
+    enabled: false
+    className: ""
+    annotations: {}
+      # nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,124.160.30.50
     hosts:
-      - host: rocketmq.example.com
+      - host: chart-example.local
         paths:
           - path: /
             pathType: ImplementationSpecific
-    #tls:
-    #  - secretName: example-com-tls
+    tls: []
+    #  - secretName: chart-example-tls
     #    hosts:
-    #      - rocketmq.example.com
+    #      - chart-example.local
 ```
