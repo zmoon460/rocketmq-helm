@@ -11,6 +11,11 @@ image:
   tag: "4.9.4"
 ```
 
+## Prerequisites
+
+- Kubernetes 1.18+
+- Helm 3.3.0+
+
 ## 部署
 
 ``` shell
