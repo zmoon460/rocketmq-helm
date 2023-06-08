@@ -104,11 +104,8 @@ dashboard:
     annotations: {}
       # nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,124.160.30.50
     hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
+      - host: rocketmq-dashboard.example.com
     tls: []
-    #  - secretName: chart-example-tls
+    #  - secretName: example-tls
     #    hosts:
-    #      - chart-example.local
+    #      - rocketmq-dashboard.example.com

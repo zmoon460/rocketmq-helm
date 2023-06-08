@@ -24,11 +24,8 @@ dashboard:
     enabled: false
     className: "nginx"
     hosts:
-      - host: rocketmq.example.com
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    #tls:
-    #  - secretName: example-com-tls
+      - host: rocketmq-dashboard.example.com
+    tls: []
+    #  - secretName: example-tls
     #    hosts:
-    #      - rocketmq.example.com
+    #      - rocketmq-dashboard.example.com
