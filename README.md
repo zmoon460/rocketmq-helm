@@ -18,23 +18,44 @@ image:
 
 ## 部署
 
-``` shell
-git clone https://github.com/itboon/rocketmq-helm.git
-cd rocketmq-helm
 
-## 部署测试集群, 单 Master
+``` shell
+## 添加 helm 仓库
+helm repo add rocketmq-repo https://helm-charts.itboon.top/rocketmq
+helm repo update rocketmq-repo
+```
+
+``` shell
+## 部署测试集群, 单 Master (关闭持久化存储)
 helm upgrade --install rocketmq \
   --namespace rocketmq-demo \
   --create-namespace \
-  -f examples/test.yaml \
-  ./charts/rocketmq
+  --set broker.persistence.enabled="false" \
+  rocketmq-repo/rocketmq
+
+## 部署测试集群, 启用 Dashboard (默认已开启持久化存储)
+helm upgrade --install rocketmq \
+  --namespace rocketmq-demo \
+  --create-namespace \
+  --set dashboard.enabled="true" \
+  --set dashboard.ingress.enabled="true" \
+  --set dashboard.ingress.hosts[0].host="rocketmq-demo.example.com" \
+  rocketmq-repo/rocketmq
 
 ## 部署生产集群, 多 Master 多 Slave
+## 3个 master 节点，每个 master 具有1个副节点，共6个 broker 节点
 helm upgrade --install rocketmq \
   --namespace rocketmq-demo \
   --create-namespace \
-  -f examples/production.yaml \
-  ./charts/rocketmq
+  --set broker.size.master="3" \
+  --set broker.size.replica="1" \
+  --set broker.master.jvmMemory="-Xms2g -Xmx2g -Xmn1g" \
+  --set broker.master.resources.requests.memory="4Gi" \
+  --set nameserver.replicaCount="3" \
+  --set dashboard.enabled="true" \
+  --set dashboard.ingress.enabled="true" \
+  --set dashboard.ingress.hosts[0].host="rocketmq-ha.example.com" \
+  rocketmq-repo/rocketmq
 
 ```
 
