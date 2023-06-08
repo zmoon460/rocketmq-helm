@@ -17,11 +17,20 @@ image:
 git clone https://github.com/itboon/rocketmq-helm.git
 cd rocketmq-helm
 
-kubectl create namespace rocketmq
-# 部署测试集群, 单 Master
-helm -n rocketmq install rocketmq -f examples/test.yml ./charts/rocketmq
-# 部署生产集群, 多 Master 多 Slave
-helm -n rocketmq install rocketmq -f examples/production.yaml ./charts/rocketmq
+## 部署测试集群, 单 Master
+helm upgrade --install rocketmq \
+  --namespace rocketmq-demo \
+  --create-namespace \
+  -f examples/test.yaml \
+  ./charts/rocketmq
+
+## 部署生产集群, 多 Master 多 Slave
+helm upgrade --install rocketmq \
+  --namespace rocketmq-demo \
+  --create-namespace \
+  -f examples/production.yaml \
+  ./charts/rocketmq
+
 ```
 
 ## Broker 集群架构

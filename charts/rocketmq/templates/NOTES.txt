@@ -1,8 +1,10 @@
-1. Get the application URL by running these commands:
-{{- if .Values.dashboard.ingress.enabled }}
-{{- range $host := .Values.dashboard.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.dashboard.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+>>> Nameserver Address:
+  {{- printf "%s.%s" (include "rocketmq.nameserver.fullname" .) (.Release.Namespace) | nindent 4 }}
+
+{{- if and (.Values.dashboard.enabled) (.Values.dashboard.ingress.enabled) }}
+
+>>> Visit RocketMQ Dashboard:
+  {{- range $host := .Values.dashboard.ingress.hosts }}
+    http{{ if $.Values.dashboard.ingress.tls }}s{{ end }}://{{ $host.host }}/
   {{- end }}
-{{- end }}
 {{- end }}
