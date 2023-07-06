@@ -59,6 +59,8 @@ helm upgrade --install rocketmq \
 
 ```
 
+> 具体资源配额请根据实际环境调整，参考 [examples](examples/production.yaml)
+
 ## Broker 集群架构
 
 ### 单 Master 模式
