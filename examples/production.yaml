@@ -13,7 +13,7 @@ broker:
 
   persistence:
     enabled: true
-    size: 8Gi
+    size: 20Gi
     #storageClass: gp2
 
   # 主节点资源分配
@@ -23,29 +23,24 @@ broker:
     resources:
       limits:
         cpu: 4
-        memory: 12Gi
+        memory: 16Gi
       requests:
-        cpu: 200m
-        memory: 6Gi
+        cpu: 500m
+        memory: 8Gi
   
   # 副节点资源分配
   replica:
-    jvmMemory: " -Xms1g -Xmx1g -Xmn256m "
+    jvmMemory: " -Xms2g -Xmx2g -Xmn512m "
     resources:
       limits:
         cpu: 4
-        memory: 8Gi
+        memory: 16Gi
       requests:
-        cpu: 50m
-        memory: 2Gi
+        cpu: 100m
+        memory: 4Gi
 
 nameserver:
   replicaCount: 3
-
-  # 修改 nameserver 容器镜像地址和版本
-  #image:
-  #  repository: "apacherocketmq/rocketmq-nameserver"
-  #  tag: "4.5.0-alpine-operator-0.3.0"
 
   resources:
     limits:
@@ -54,11 +49,6 @@ nameserver:
     requests:
       cpu: 50m
       memory: 1Gi
-  
-  persistence:
-    enabled: true
-    size: 8Gi
-    #storageClass: gp2
 
 dashboard:
   enabled: true
