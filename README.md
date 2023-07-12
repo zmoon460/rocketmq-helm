@@ -1,23 +1,14 @@
 # RocketMQ Helm Chart
 
-## v2 版本发布公告
+https://github.com/itboon/rocketmq-helm
 
-- 兼容官方容器镜像 [apache/rocketmq](https://hub.docker.com/r/apache/rocketmq)
-- 支持 rocketmq `4.5` 到 `4.9` 版本
-
-``` yaml
-image:
-  repository: "apache/rocketmq"
-  tag: "4.9.4"
-```
-
-## Prerequisites
+## 版本兼容性
 
 - Kubernetes 1.18+
-- Helm 3.3.0+
+- Helm 3.3+
+- RocketMQ `>= 4.5` (`5.x` 未测试)
 
-## 部署
-
+## 添加 helm 仓库
 
 ``` shell
 ## 添加 helm 仓库
@@ -25,14 +16,19 @@ helm repo add rocketmq-repo https://helm-charts.itboon.top/rocketmq
 helm repo update rocketmq-repo
 ```
 
+## 部署案例
+
 ``` shell
-## 部署测试集群, 单 Master (关闭持久化存储)
+## 部署一个最小化的 rocketmq 集群
+## 这里关闭持久化存储，仅演示部署效果
 helm upgrade --install rocketmq \
   --namespace rocketmq-demo \
   --create-namespace \
   --set broker.persistence.enabled="false" \
   rocketmq-repo/rocketmq
+```
 
+``` shell
 ## 部署测试集群, 启用 Dashboard (默认已开启持久化存储)
 helm upgrade --install rocketmq \
   --namespace rocketmq-demo \
@@ -41,8 +37,10 @@ helm upgrade --install rocketmq \
   --set dashboard.ingress.enabled="true" \
   --set dashboard.ingress.hosts[0].host="rocketmq-demo.example.com" \
   rocketmq-repo/rocketmq
+```
 
-## 部署生产集群, 多 Master 多 Slave
+``` shell
+## 部署高可用集群, 多 Master 多 Slave
 ## 3个 master 节点，每个 master 具有1个副节点，共6个 broker 节点
 helm upgrade --install rocketmq \
   --namespace rocketmq-demo \
@@ -59,7 +57,26 @@ helm upgrade --install rocketmq \
 
 ```
 
-> 具体资源配额请根据实际环境调整，参考 [examples](examples/production.yaml)
+> 具体资源配额请根据实际环境调整，参考 [examples](https://github.com/itboon/rocketmq-helm/tree/main/examples)
+
+
+## 镜像仓库
+
+``` yaml
+image:
+  repository: apache/rocketmq
+  tag: 4.9.7
+```
+
+### 部署特定版本
+
+``` shell
+helm upgrade --install rocketmq \
+  --namespace rocketmq-demo \
+  --create-namespace \
+  --set image.tag="4.9.5" \
+  rocketmq-repo/rocketmq
+```
 
 ## Broker 集群架构
 
@@ -99,80 +116,4 @@ broker:
     master: 3
     replica: 1
 # 3个 master 节点，每个 master 具有1个副节点，共6个 broker 节点
-```
-
-## 配置
-
-``` yaml
-# 集群名
-clusterName: "cluster-production"
-
-broker:
-  # 3个 master 节点，每个 master 具有1个副节点，共6个 broker 节点
-  size:
-    master: 3
-    replica: 1
-
-  persistence:
-    enabled: true
-    size: 8Gi
-    #storageClass: gp2
-
-  # 主节点资源分配
-  master:
-    brokerRole: ASYNC_MASTER
-    jvmMemory: " -Xms4g -Xmx4g -Xmn1g "
-    resources:
-      limits:
-        cpu: 4
-        memory: 12Gi
-      requests:
-        cpu: 200m
-        memory: 6Gi
-  
-  # 副节点资源分配
-  replica:
-    jvmMemory: " -Xms1g -Xmx1g -Xmn256m "
-    resources:
-      limits:
-        cpu: 4
-        memory: 8Gi
-      requests:
-        cpu: 50m
-        memory: 2Gi
-
-nameserver:
-  replicaCount: 3
-
-  resources:
-    limits:
-      cpu: 4
-      memory: 8Gi
-    requests:
-      cpu: 50m
-      memory: 1Gi
-  
-  persistence:
-    enabled: true
-    size: 8Gi
-    #storageClass: gp2
-
-dashboard:
-  enabled: true
-  replicaCount: 1
-
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,124.160.30.50
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
 ```
