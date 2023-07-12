@@ -3,7 +3,7 @@ clusterName: "rocketmq-cluster-a"
 image:
   repository: "apache/rocketmq"
   pullPolicy: IfNotPresent
-  tag: "4.9.4"
+  tag: "4.9.7"
 
 broker:
   size:
