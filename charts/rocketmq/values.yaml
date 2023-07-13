@@ -46,8 +46,17 @@ broker:
     #transferMsgByHeap: "false"
 
   affinityOverride: {}
-  tolerations: {}
+  tolerations: []
   nodeSelector: {}
+
+  ## broker.readinessProbe
+  readinessProbe:
+    tcpSocket:
+      port: main
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
 
 nameserver:
   replicaCount: 1
@@ -68,8 +77,17 @@ nameserver:
     #storageClass: "gp2"
 
   affinityOverride: {}
-  tolerations: {}
+  tolerations: []
   nodeSelector: {}
+
+  ## nameserver.readinessProbe
+  readinessProbe:
+    tcpSocket:
+      port: main
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
 
 dashboard:
   enabled: true

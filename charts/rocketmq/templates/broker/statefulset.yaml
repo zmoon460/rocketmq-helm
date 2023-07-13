@@ -71,12 +71,10 @@ spec:
       containers:
       - name: broker
         image: {{ $image | quote }}
+        imagePullPolicy: {{ $.Values.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh
           - /runbroker.sh
-        {{- if $.Values.image.pullPolicy }}
-        imagePullPolicy: {{ $.Values.image.pullPolicy | quote }}
-        {{- end }}
         env:
         - name: NAMESRV_ADDR
           #value: rocketmq-nameserver:9876
@@ -115,6 +113,18 @@ spec:
         {{- else }}
           {{- toYaml $.Values.broker.replica.resources | nindent 10 }}
         {{- end }}
+        {{- with $.Values.broker.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $.Values.broker.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 5; ./mqshutdown broker"]
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
@@ -131,7 +141,7 @@ spec:
           name: runbroker-sh
           subPath: runbroker.sh
       dnsPolicy: ClusterFirst
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: {{ $.Values.broker.terminationGracePeriodSeconds | default 30 }}
       volumes:
       - configMap:
           items:
