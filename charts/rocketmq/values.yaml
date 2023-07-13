@@ -9,10 +9,6 @@ broker:
   size:
     master: 1
     replica: 0
-  #image:
-  #  repository: "apache/rocketmq"
-  #  pullPolicy: IfNotPresent
-  #  tag: "4.9.4"
   
   master:
     brokerRole: ASYNC_MASTER
@@ -37,7 +33,7 @@ broker:
 
   persistence:
     enabled: true
-    size: 8Gi
+    size: 20Gi
     #storageClass: "gp2"
   
   config:
@@ -55,10 +51,6 @@ broker:
 
 nameserver:
   replicaCount: 1
-  #image:
-  #  repository: "apache/rocketmq"
-  #  pullPolicy: IfNotPresent
-  #  tag: "4.9.4"
 
   resources:
     limits:

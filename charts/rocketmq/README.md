@@ -47,7 +47,7 @@ helm upgrade --install rocketmq \
   --create-namespace \
   --set broker.size.master="3" \
   --set broker.size.replica="1" \
-  --set broker.master.jvmMemory="-Xms2g -Xmx2g -Xmn1g" \
+  --set broker.master.jvmMemory="-Xms2g -Xmx2g" \
   --set broker.master.resources.requests.memory="4Gi" \
   --set nameserver.replicaCount="3" \
   --set dashboard.enabled="true" \

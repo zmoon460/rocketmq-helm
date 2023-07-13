@@ -19,7 +19,7 @@ broker:
   # 主节点资源分配
   master:
     brokerRole: ASYNC_MASTER
-    jvmMemory: " -Xms4g -Xmx4g -Xmn1g "
+    jvmMemory: "-Xms4g -Xmx4g"
     resources:
       limits:
         cpu: 4
@@ -30,7 +30,7 @@ broker:
   
   # 副节点资源分配
   replica:
-    jvmMemory: " -Xms2g -Xmx2g -Xmn512m "
+    jvmMemory: "-Xms2g -Xmx2g"
     resources:
       limits:
         cpu: 4
