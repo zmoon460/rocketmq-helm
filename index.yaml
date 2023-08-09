@@ -3,6 +3,23 @@ entries:
   rocketmq:
   - apiVersion: v2
     appVersion: 4.9.7
+    created: "2023-08-09T13:59:45.83330024Z"
+    description: RocketMQ Helm chart
+    digest: b4e4964b8d47ff3c5927a703adb30cf5b02e5d78f5f0c3872961ae2e335350b2
+    keywords:
+    - rocketmq
+    - kubernetes
+    - apache
+    maintainers:
+    - name: itboon
+      url: https://github.com/itboon/rocketmq-helm
+    name: rocketmq
+    type: application
+    urls:
+    - https://github.com/itboon/rocketmq-helm/releases/download/rocketmq-chart-2.2.1/rocketmq-2.2.1.tgz
+    version: 2.2.1
+  - apiVersion: v2
+    appVersion: 4.9.7
     created: "2023-07-13T16:34:03.395886269Z"
     description: RocketMQ Helm chart
     digest: 9fa4b730f8588ff5ca8721acc8c2c90d586957626522c8ab9aea6610c1a5b58b
@@ -69,4 +86,4 @@ entries:
     urls:
     - https://github.com/itboon/rocketmq-helm/releases/download/rocketmq-chart-2.1.0/rocketmq-2.1.0.tgz
     version: 2.1.0
-generated: "2023-07-13T16:34:03.395903071Z"
+generated: "2023-08-09T13:59:45.833393041Z"
