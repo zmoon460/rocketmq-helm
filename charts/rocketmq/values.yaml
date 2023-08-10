@@ -110,7 +110,7 @@ dashboard:
   
   service:
     annotations: {}
-    # type: ClusterIP
+    type: ClusterIP
     # nodePort: 31007
   
   ingress:

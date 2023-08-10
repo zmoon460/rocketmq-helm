@@ -19,7 +19,7 @@ spec:
   - port: 8080
     protocol: TCP
     targetPort: 8080
-    {{- if .Values.dashboard.service.nodePort }}
+    {{- if and (eq .Values.dashboard.service.type "NodePort") .Values.dashboard.service.nodePort }}
     nodePort: {{ .Values.dashboard.service.nodePort }}
     {{- end }}
   selector:
